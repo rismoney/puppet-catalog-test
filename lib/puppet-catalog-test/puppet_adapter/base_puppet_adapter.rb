@@ -1,4 +1,5 @@
 require "puppet"
+require "tmpdir"
 
 module PuppetCatalogTest
   class BasePuppetAdapter
@@ -37,6 +38,7 @@ module PuppetCatalogTest
       module_path = module_paths.join(":")
 
       Puppet.settings.handlearg("--modulepath", module_path)
+      Puppet.settings.handlearg("--vardir", Dir.mktmpdir)
 
       if hiera_config
         raise ArgumentError, "[ERROR] hiera_config  (#{hiera_config}) does not exist" if !FileTest.exist?(hiera_config)
