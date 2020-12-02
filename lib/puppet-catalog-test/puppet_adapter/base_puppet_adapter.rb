@@ -14,6 +14,7 @@ module PuppetCatalogTest
       config_dir = config[:config_dir]
       hiera_config = config[:hiera_config]
       verbose = config[:verbose]
+      environment = config[:environment] || "production"
 
       raise ArgumentError, "[ERROR] manifest_path must be specified" if !manifest_path
       raise ArgumentError, "[ERROR] manifest_path (#{manifest_path}) does not exist" if !FileTest.exist?(manifest_path)
@@ -39,11 +40,22 @@ module PuppetCatalogTest
 
       Puppet.settings.handlearg("--modulepath", module_path)
       Puppet.settings.handlearg("--vardir", Dir.mktmpdir)
+      Puppet.settings.handlearg("--environment", environment)
 
       if hiera_config
         raise ArgumentError, "[ERROR] hiera_config  (#{hiera_config}) does not exist" if !FileTest.exist?(hiera_config)
         Puppet.settings[:hiera_config] = hiera_config
       end
+      env = Puppet::Node::Environment.create(environment, [module_path], manifest_path)
+      loader = Puppet::Environments::Static.new(env)
+
+      Puppet.push_context(
+        {
+          :environments => loader,
+          :current_environment => env
+        },
+        "Setup puppet-catalog-test environments"
+      )
     end
 
     def parser; end
