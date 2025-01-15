@@ -14,7 +14,7 @@ module PuppetCatalogTest
       config_dir = config[:config_dir]
       hiera_config = config[:hiera_config]
       verbose = config[:verbose]
-      environment = config[:environment] || "production"
+      environment = config[:environment] || "master"
 
       raise ArgumentError, "[ERROR] manifest_path must be specified" if !manifest_path
       raise ArgumentError, "[ERROR] manifest_path (#{manifest_path}) does not exist" if !FileTest.exist?(manifest_path)
